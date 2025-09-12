@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sidhanta — Realistic To-Do</title>
+
+  <!-- Google font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg1: #081224;
+      --bg2: #0f1724;
+      --glass: rgba(255,255,255,0.06);
+      --muted: #9fb0c3;
+      --accent-a: #6ae3ff;
+      --accent-b: #8a7dff;
+      --card-radius: 18px;
+      --soft-shadow: 0 8px 30px rgba(2,6,23,0.6);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto; -webkit-font-smoothing:antialiased}
+    body{
+      background: radial-gradient(1000px 600px at 10% 10%, rgba(138,125,255,0.09), transparent 10%),
+                  linear-gradient(180deg,var(--bg1),var(--bg2));
+      display:flex;align-items:center;justify-content:center;padding:36px;
+      color: #eaf2ff;
+      -webkit-font-smoothing:antialiased;
+    }
+
+    /* App shell */
+    .app {
+      width:100%;
+      max-width:920px;
+      display:grid;
+      grid-template-columns: 1fr 380px;
+      gap:24px;
+      align-items:start;
+    }
+
+    /* Left main card */
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.04);
+      padding:24px;
+      border-radius: var(--card-radius);
+      box-shadow: var(--soft-shadow);
+      backdrop-filter: blur(8px) saturate(120%);
+      transform: translateZ(0);
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+    .card:hover { transform: translateY(-6px); box-shadow: 0 22px 50px rgba(2,6,23,0.75); }
+
+    header.app-head {
+      display:flex; gap:12px; align-items:center; justify-content:space-between; margin-bottom:18px;
+    }
+    .title {
+      display:flex; gap:12px; align-items:center;
+    }
+    .logo {
+      width:56px;height:56px;border-radius:12px;
+      background: linear-gradient(135deg,var(--accent-a),var(--accent-b));
+      display:flex;align-items:center;justify-content:center;font-weight:700;color:#06131a;
+      box-shadow: 0 6px 22px rgba(138,125,255,0.12), inset 0 -6px 10px rgba(255,255,255,0.05);
+      font-size:18px;
+    }
+    h1 { font-size:20px; margin:0; letter-spacing:0.2px; color: #eaf2ff; }
+    .sub { color:var(--muted); font-size:13px; margin-top:4px; }
+
+    /* Clock pill */
+    .clock-pill {
+      background: rgba(255,255,255,0.03);
+      padding:8px 12px; border-radius:999px; font-weight:600; color:var(--muted); font-size:14px;
+      display:flex; gap:10px; align-items:center;
+      box-shadow: 0 4px 14px rgba(2,6,23,0.35);
+    }
+
+    /* input area */
+    .input-row { display:flex; gap:12px; align-items:flex-start; margin-bottom:18px; }
+    .input {
+      flex:1;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.035);
+      padding:12px 14px; border-radius:12px; color:var(--text);
+      transition: box-shadow .15s ease, transform .12s ease;
+    }
+    .input:focus { outline:none; box-shadow: 0 6px 20px rgba(138,125,255,0.14); transform: translateY(-2px); border-color: rgba(138,125,255,0.55); }
+    select.input { padding-top:10px; }
+
+    .btn-add {
+      background: linear-gradient(135deg,var(--accent-a),var(--accent-b));
+      border:none;padding:12px 16px;border-radius:12px;color:#06131a;font-weight:700;cursor:pointer;
+      box-shadow: 0 8px 30px rgba(138,125,255,0.12);
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .btn-add:active { transform: translateY(2px); }
+    .btn-add .ripple { position:relative; overflow:hidden; border-radius:12px; display:inline-block; }
+
+    /* todo list */
+    .list { display:flex; flex-direction:column; gap:12px; max-height:520px; overflow:auto; padding-right:6px; }
+    .task {
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:12px; border-radius:12px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.03);
+      transform-origin:left center;
+      animation: task-in .32s cubic-bezier(.2,.9,.3,1);
+    }
+    @keyframes task-in { from { opacity:0; transform: translateX(-14px) scale(.995) } to { opacity:1; transform:none } }
+
+    .left {
+      display:flex; gap:12px; align-items:center; min-width:0;
+    }
+    .checkbox {
+      width:44px; height:44px; border-radius:10px; display:grid;place-items:center; cursor:pointer;
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
+      border:1px solid rgba(255,255,255,0.03);
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .checkbox:hover { transform: translateY(-3px); box-shadow:0 10px 24px rgba(2,6,23,0.28) }
+
+    .checkbox svg { width:20px; height:20px; opacity:0; transform:scale(.8); transition: transform .18s ease, opacity .14s ease; }
+    .checkbox.checked {
+      background: linear-gradient(135deg, rgba(106,227,255,0.15), rgba(138,125,255,0.15));
+      border-color: rgba(138,125,255,0.35);
+    }
+    .checkbox.checked svg { opacity:1; transform:scale(1); filter:drop-shadow(0 6px 18px rgba(138,125,255,0.08)) }
+
+    .text {
+      min-width:0;
+    }
+    .title-text { font-weight:600; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .meta { font-size:12px; color:var(--muted); margin-top:6px; }
+
+    .controls { display:flex; gap:8px; align-items:center; }
+    .icon-btn {
+      width:40px;height:40px;border-radius:10px;border:none;background:transparent;color:var(--muted);cursor:pointer;
+      display:grid;place-items:center;font-size:16px; transition: transform .12s ease, color .12s ease;
+    }
+    .icon-btn:hover { transform: translateY(-3px); color:var(--accent-b); }
+
+    /* right panel */
+    .side {
+      height:100%;
+      position:relative;
+    }
+    .panel {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius: var(--card-radius);
+      padding:18px; border:1px solid rgba(255,255,255,0.035);
+      box-shadow: var(--soft-shadow);
+    }
+    .panel h3 { margin:0 0 12px 0 }
+    .progress {
+      height:12px; background: rgba(255,255,255,0.03); border-radius:999px; overflow:hidden;
+    }
+    .progress > i { display:block; height:100%; background: linear-gradient(90deg,var(--accent-a),var(--accent-b)); width:0%; transition: width .7s cubic-bezier(.2,.9,.3,1) }
+
+    /* toast */
+    .toast {
+      position: fixed; right:24px; bottom:24px; min-width:260px;
+      background: linear-gradient(180deg, rgba(6,19,26,0.98), rgba(10,22,30,0.95));
+      border-radius:12px; padding:12px 14px; color:#eaf2ff; box-shadow:0 12px 40px rgba(2,6,23,0.6);
+      display:flex; gap:12px; align-items:center; transform: translateY(30px) scale(.98); opacity:0; pointer-events:none;
+      transition: transform .28s cubic-bezier(.2,.9,.3,1), opacity .28s ease;
+    }
+    .toast.show { transform:none; opacity:1; pointer-events:auto; }
+
+    /* small helpers */
+    .muted { color:var(--muted); font-size:13px }
+    .small { font-size:12px }
+
+    /* completed style */
+    .task.done .title-text { text-decoration:line-through; color: #93a6b8; }
+    .task.done { opacity: .75; transform: scale(.995); }
+
+    /* responsive */
+    @media (max-width:880px) {
+      .app { grid-template-columns: 1fr; }
+      .side { order:2; margin-top:12px }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app" role="application" aria-label="Sidhanta To-Do App">
+    <!-- Left: main -->
+    <section class="card" aria-labelledby="appTitle">
+      <header class="app-head">
+        <div class="title">
+          <div class="logo">SS</div>
+          <div>
+            <h1 id="appTitle">Sidhanta To-Do</h1>
+            <div class="sub">Realistic UI • Smooth animations • Reminders</div>
+          </div>
+        </div>
+
+        <div class="clock-pill" id="clock" aria-live="polite">--:--:--</div>
+      </header>
+
+      <!-- Input -->
+      <div class="input-row" aria-hidden="false">
+        <input id="taskInput" class="input" type="text" placeholder="Add a task or choose a routine..." aria-label="Task name">
+        <select id="routineSelect" class="input" aria-label="Select a routine">
+          <option value="">— Routine —</option>
+          <option value="Wake up">🌅 Wake up</option>
+          <option value="Go to School">🏫 Go to School</option>
+          <option value="Study">📖 Study</option>
+          <option value="Lunch">🍲 Lunch</option>
+          <option value="Play">⚽ Play</option>
+          <option value="Dinner">🍽 Dinner</option>
+          <option value="Sleep">😴 Sleep</option>
+        </select>
+        <input id="reminderTime" class="input" type="datetime-local" aria-label="Reminder time">
+        <button id="addBtn" class="btn-add ripple" title="Add task (Enter)">
+          Add
+        </button>
+      </div>
+
+      <!-- List -->
+      <div class="list" id="todoList" aria-live="polite"></div>
+
+      <div style="margin-top:14px; text-align:center" class="muted small">Tip: press Enter to add. Tasks are saved in your browser.</div>
+    </section>
+
+    <!-- Right: panel -->
+    <aside class="side">
+      <div class="panel">
+        <h3>Today</h3>
+        <div class="muted small" id="counts">0 tasks • 0 done</div>
+        <div style="height:12px;margin:12px 0" class="progress"><i id="progressBar"></i></div>
+
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:18px 0">
+
+        <div>
+          <h4 style="margin:0 0 8px 0">Upcoming reminders</h4>
+          <div id="upcoming" class="muted small">No reminders set</div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- toast notification -->
+  <div id="toast" class="toast" role="status" aria-live="assertive">
+    <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent-a),var(--accent-b));display:grid;place-items:center;font-weight:700;color:#051017">⏰</div>
+    <div>
+      <div id="toastTitle" style="font-weight:700">Reminder</div>
+      <div id="toastText" class="muted small">Time to check your task</div>
+    </div>
+  </div>
+
+  <script>
+    /* ======= Simple data model with localStorage persistence ======= */
+    const LS_KEY = 'sidhanta_todos_v1';
+    let todos = JSON.parse(localStorage.getItem(LS_KEY) || '[]');
+
+    // DOM refs
+    const todoListEl = document.getElementById('todoList');
+    const taskInput = document.getElementById('taskInput');
+    const routineSelect = document.getElementById('routineSelect');
+    const reminderTime = document.getElementById('reminderTime');
+    const addBtn = document.getElementById('addBtn');
+    const clockEl = document.getElementById('clock');
+    const countsEl = document.getElementById('counts');
+    const progressBar = document.getElementById('progressBar');
+    const upcomingEl = document.getElementById('upcoming');
+    const toast = document.getElementById('toast');
+    const toastTitle = document.getElementById('toastTitle');
+    const toastText = document.getElementById('toastText');
+
+    /* ======= Helpers ======= */
+    function save() { localStorage.setItem(LS_KEY, JSON.stringify(todos)); updateUI(); }
+    function formatDT(dt) { return new Date(dt).toLocaleString(); }
+    function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+
+    /* ======= Clock ======= */
+    function updateClock(){
+      clockEl.textContent = new Date().toLocaleTimeString();
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    /* ======= Render UI ======= */
+    function updateUI(){
+      // render list
+      todoListEl.innerHTML = '';
+      if (todos.length === 0) {
+        todoListEl.innerHTML = '<div class="muted small" style="padding:12px">No tasks yet — add something nice ✨</div>';
+      } else {
+        todos.forEach(t => {
+          const li = document.createElement('div');
+          li.className = 'task' + (t.done ? ' done' : '');
+          li.dataset.id = t.id;
+
+          const left = document.createElement('div'); left.className='left';
+          // checkbox
+          const cb = document.createElement('button'); cb.className='checkbox' + (t.done ? ' checked' : '');
+          cb.setAttribute('aria-pressed', !!t.done);
+          cb.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>`;
+          cb.onclick = () => toggleDone(t.id);
+          left.appendChild(cb);
+
+          // text
+          const text = document.createElement('div'); text.className='text';
+          const h = document.createElement('div'); h.className='title-text'; h.textContent = t.title;
+          const meta = document.createElement('div'); meta.className='meta';
+          meta.textContent = t.reminder ? '⏰ ' + formatDT(t.reminder) : (t.note || '');
+          text.appendChild(h); text.appendChild(meta);
+          left.appendChild(text);
+
+          // controls
+          const controls = document.createElement('div'); controls.className='controls';
+          const edit = document.createElement('button'); edit.className='icon-btn'; edit.title='Edit'; edit.innerHTML='✎';
+          edit.onclick = ()=> editTask(t.id);
+          const del = document.createElement('button'); del.className='icon-btn'; del.title='Delete'; del.innerHTML='✖';
+          del.onclick = ()=> removeTask(t.id);
+
+          controls.appendChild(edit); controls.appendChild(del);
+
+          li.appendChild(left);
+          li.appendChild(controls);
+          todoListEl.appendChild(li);
+        });
+      }
+
+      // counts
+      const total = todos.length;
+      const done = todos.filter(t=>t.done).length;
+      countsEl.textContent = `${total} tasks • ${done} done`;
+      const pct = total ? Math.round((done/total)*100) : 0;
+      progressBar.style.width = pct + '%';
+
+      // upcoming reminders (next 3 non-done with reminder)
+      const upcoming = todos
+        .filter(t=>t.reminder && !t.done && new Date(t.reminder) > new Date())
+        .sort((a,b)=>new Date(a.reminder)-new Date(b.reminder))
+        .slice(0,3);
+      if (upcoming.length === 0) upcomingEl.textContent = 'No reminders set';
+      else upcomingEl.innerHTML = upcoming.map(u => `⏰ ${formatDT(u.reminder)} — ${u.title}`).join('<br>');
+    }
+
+    /* ======= Task operations ======= */
+    function addTask(){
+      let title = taskInput.value.trim() || routineSelect.value.trim();
+      if (!title) return;
+      const rem = reminderTime.value ? new Date(reminderTime.value).toISOString() : null;
+      const newTask = { id: uid(), title, reminder: rem, note: '', done:false, created: new Date().toISOString() };
+      todos.unshift(newTask);
+      scheduleReminder(newTask);
+      save();
+      // small animation: focus and ripple
+      taskInput.value=''; routineSelect.value=''; reminderTime.value='';
+      taskInput.focus();
+    }
+
+    function toggleDone(id){
+      const t = todos.find(x=>x.id===id);
+      if (!t) return;
+      t.done = !t.done;
+      save();
+    }
+
+    function removeTask(id){
+      // fade then remove
+      const el = document.querySelector(`.task[data-id="${id}"]`);
+      if (el){
+        el.style.transition = 'opacity .28s ease, transform .28s ease';
+        el.style.opacity = 0; el.style.transform = 'translateX(24px) scale(.98)';
+        setTimeout(()=> {
+          todos = todos.filter(x=>x.id!==id); save();
+        }, 280);
+      } else {
+        todos = todos.filter(x=>x.id!==id); save();
+      }
+    }
+
+    function editTask(id){
+      const t = todos.find(x=>x.id===id);
+      if (!t) return;
+      const newTitle = prompt('Edit task title', t.title);
+      if (newTitle !== null) {
+        t.title = newTitle.trim() || t.title;
+        save();
+      }
+    }
+
+    /* ======= Reminders ======= */
+    // Track scheduled timers to allow persistence across page life
+    const timers = {};
+    function scheduleAll(){
+      todos.forEach(t => scheduleReminder(t));
+    }
+    function scheduleReminder(task){
+      if (!task.reminder) return;
+      const when = new Date(task.reminder).getTime();
+      const now = Date.now();
+      const delay = when - now;
+      // if already done or past, skip
+      if (task.done || delay <= 0) return;
+      // clear old timer
+      if (timers[task.id]) clearTimeout(timers[task.id]);
+      timers[task.id] = setTimeout(()=> {
+        showToast('Reminder', task.title);
+        // optional: mark not done but we can keep it
+        delete timers[task.id];
+      }, delay);
+    }
+
+    /* ======= Toast ======= */
+    let toastTimer = null;
+    function showToast(title, text){
+      toastTitle.textContent = title;
+      toastText.textContent = text;
+      toast.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(()=> toast.classList.remove('show'), 6000);
+    }
+
+    /* ======= Keyboard shortcuts ======= */
+    taskInput.addEventListener('keydown', (e)=>{
+      if (e.key === 'Enter') addTask();
+    });
+    addBtn.addEventListener('click', addTask);
+
+    /* ======= Init ======= */
+    scheduleAll();
+    updateUI();
+
+    // accessibility: hide toast on click
+    toast.addEventListener('click', ()=> toast.classList.remove('show'));
+
+    // small: make sure to re-schedule after load (handles editing)
+    window.addEventListener('storage', ()=> {
+      todos = JSON.parse(localStorage.getItem(LS_KEY) || '[]');
+      scheduleAll();
+      updateUI();
+    });
+  </script>
+</body>
+</html>
