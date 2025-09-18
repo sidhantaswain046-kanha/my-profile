@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI/ML Student Landing Page</title>
+  <style>body {
+  margin: 0;
+  font-family: 'Inter', Arial, sans-serif;
+  color: #222;
+  background: linear-gradient(180deg,#f5f8ff,#eaf2ff);
+}
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 5%;
+  background: #fff;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.05);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.brand {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #8a7dff;
+}
+.nav-links {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+}
+.nav-links li a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+.nav-links li a:hover { color: #6ae3ff; }
+.menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #8a7dff;
+  cursor: pointer;
+}
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 64px 5%;
+  gap: 48px;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: auto;
+}
+.hero-left h1 {
+  font-size: 2.5rem;
+  margin: 0 0 16px 0;
+}
+.hero-left p {
+  font-size: 1.17rem;
+  margin-bottom: 28px;
+}
+.cta-btn {
+  background: linear-gradient(135deg,#6ae3ff,#8a7dff);
+  color: #fff;
+  font-weight: 700;
+  padding: 14px 32px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-size: 1.25rem;
+  transition: filter 0.2s;
+  box-shadow: 0 4px 24px rgba(141,124,255,0.12);
+}
+.cta-btn:hover { filter: brightness(0.95); }
+.hero-right img {
+  max-width: 320px;
+  border-radius: 18px;
+  box-shadow: 0 12px 40px rgba(138,125,255,0.13);
+}
+.features {
+  background: #fff;
+  padding: 40px 5%;
+  text-align: center;
+}
+.feature-list {
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 32px;
+}
+.feature-card {
+  background: linear-gradient(180deg,#f8faff,#e8eafc);
+  border: 1px solid #eaeaea;
+  border-radius: 14px;
+  padding: 28px 24px;
+  min-width: 230px;
+  max-width: 270px;
+  box-shadow: 0 8px 30px rgba(2,6,23,0.05);
+}
+.signup {
+  padding: 40px 5%;
+  text-align: center;
+  background: linear-gradient(180deg,#eaf2ff,#f5f8ff);
+}
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 320px;
+  margin: 32px auto 0 auto;
+}
+.signup-form input {
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #d1dae8;
+  font-size: 1rem;
+}
+.signup-form button {
+  background: linear-gradient(90deg,#6ae3ff,#8a7dff);
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(141,124,255,0.07);
+}
+.signup-form button:hover { filter: brightness(0.97); }
+footer {
+  background: #fff;
+  padding: 22px 0;
+  text-align: center;
+  font-size: 1rem;
+  color: #8a7dff;
+  box-shadow: 0 -2px 12px rgba(138,125,255,0.04);
+}
+
+@media (max-width: 900px) {
+  .hero {
+    flex-direction: column;
+    gap: 28px;
+    text-align: center;
+  }
+  .hero-right img {
+    max-width: 90vw;
+  }
+  .feature-list {
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+  }
+}
+@media (max-width: 600px) {
+  .navbar {
+    flex-wrap: wrap;
+    padding: 14px 3%;
+  }
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    background: #fff;
+    position: absolute;
+    top: 58px;
+    right: 3%;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    border-radius: 8px;
+    z-index: 11;
+  }
+  .nav-links.nav-open {
+    display: flex;
+  }
+  .menu-btn {
+    display: block;
+  }
+  .hero-left h1 {
+    font-size: 2rem;
+  }
+  .feature-card {
+    min-width: 90vw;
+    max-width: 98vw;
+  }
+}
+</style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="brand">Sidhanta AI/ML</div>
+    <ul class="nav-links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#signup">Sign Up</a></li>
+    </ul>
+    <button class="menu-btn">&#9776;</button>
+  </nav>
+  <header class="hero" id="home">
+    <div class="hero-left">
+      <h1>Boost your productivity with a modern, responsive landing page.</h1>
+      <p>Designed for students and tech enthusiasts. Experience seamless usability on any device!</p>
+      <a href="#signup" class="cta-btn">Get Started</a>
+    </div>
+    <div class="hero-right">
+      <img src="images/land.jpg"
+           alt="Student at computer" />
+    </div>
+  </header>
+  <section class="features" id="features">
+    <h2>Landing Page Features</h2>
+    <div class="feature-list">
+      <div class="feature-card">
+        <h3>Responsive Design</h3>
+        <p>Looks great on mobiles, tablets, and desktops.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Modern Styling</h3>
+        <p>Uses flexible layouts and clean typography.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Easy Navigation</h3>
+        <p>Simple, clear menu for fast access.</p>
+      </div>
+    </div>
+  </section>
+  <section class="signup" id="signup">
+    <h2>Sign Up</h2>
+    <form class="signup-form">
+      <input type="text" placeholder="Your Name" required>
+      <input type="email" placeholder="Your Email" required>
+      <button type="submit">Join Now</button>
+    </form>
+  </section>
+  <footer>
+    <div class="footer-content">
+      &copy; 2025 Sidhanta AI/ML - Designed with HTML & CSS
+    </div>
+  </footer>
+  <script>
+    // Mobile nav menu toggle
+    const menuBtn = document.querySelector('.menu-btn');
+    const navLinks = document.querySelector('.nav-links');
+    menuBtn.addEventListener('click', () => {
+      navLinks.classList.toggle('nav-open');
+    });
+  </script>
+</body>
+</html>
