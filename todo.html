@@ -175,10 +175,70 @@
     .task.done { opacity: .75; transform: scale(.995); }
 
     /* responsive */
-    @media (max-width:880px) {
-      .app { grid-template-columns: 1fr; }
-      .side { order:2; margin-top:12px }
-    }
+    /* Extra responsiveness for smaller screens */
+@media (max-width:600px) {
+  body {
+    padding: 16px;
+  }
+
+  .app {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .card, .panel {
+    padding: 16px;
+  }
+
+  header.app-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .logo {
+    width: 44px;
+    height: 44px;
+    font-size: 16px;
+  }
+
+  h1 {
+    font-size: 18px;
+  }
+
+  .clock-pill {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .input-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .input, .btn-add {
+    width: 100%;
+  }
+
+  .btn-add {
+    margin-top: 8px;
+    text-align: center;
+  }
+
+  .list {
+    max-height: none;
+    padding-right: 0;
+  }
+
+  .task {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .controls {
+    margin-top: 8px;
+  }
+}
   </style>
 </head>
 <body>
